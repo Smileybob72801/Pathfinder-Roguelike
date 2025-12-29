@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EntityDefinition" load_steps=4 format=3 uid="uid://cay12wu2ydqm0"]
+
+[ext_resource type="Script" uid="uid://dqrx12cjpca2d" path="res://src/Entities/entity_definition.gd" id="1_j7dal"]
+[ext_resource type="Texture2D" uid="uid://dluh1fmmeo66t" path="res://assets/textures/ProjectUtumno_full.png" id="2_js7ka"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qkhq4"]
+atlas = ExtResource("2_js7ka")
+region = Rect2(1024, 2528, 32, 32)
+
+[resource]
+script = ExtResource("1_j7dal")
+texture = SubResource("AtlasTexture_qkhq4")
+metadata/_custom_type_script = "uid://dqrx12cjpca2d"

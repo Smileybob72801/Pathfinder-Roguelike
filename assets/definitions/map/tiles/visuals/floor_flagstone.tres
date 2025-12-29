@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TileVisualDefinition" load_steps=2 format=3 uid="uid://dbapvxxjrpphd"]
+
+[ext_resource type="Script" uid="uid://by5snrwe3dvv1" path="res://src/Map/tile_visuals_definition.gd" id="1_0nns5"]
+
+[resource]
+script = ExtResource("1_0nns5")
+source_id = 1
+atlas_coords_options = Array[Vector2i]([Vector2i(21, 7), Vector2i(23, 7), Vector2i(25, 7), Vector2i(27, 7)])
+metadata/_custom_type_script = "uid://by5snrwe3dvv1"

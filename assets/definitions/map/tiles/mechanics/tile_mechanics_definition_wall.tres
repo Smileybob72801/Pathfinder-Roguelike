@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TileDefinition" load_steps=2 format=3 uid="uid://c1aca2u6n058b"]
+
+[ext_resource type="Script" uid="uid://cxd462ihqotw3" path="res://src/Map/tile_mechanics_definition.gd" id="1_jqyxr"]
+
+[resource]
+script = ExtResource("1_jqyxr")
+is_walkable = false
+is_transparent = false
+source_id = 1
+atlas_coords_options = Array[Vector2i]([Vector2i(10, 4)])
+metadata/_custom_type_script = "uid://cxd462ihqotw3"
