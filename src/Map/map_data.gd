@@ -104,11 +104,17 @@ func get_variant(pos: Vector2i) -> int:
 	return variants[grid_to_index(pos)]
 
 
-func is_walkable(pos: Vector2i) -> bool:
+func can_enter_tile(pos: Vector2i) -> bool:
 	if not is_in_bounds(pos):
 		return false
-	var def: TileMechanicsDefinition = TILE_MECHANICS_DEFS[get_kind(pos)]
-	return def.is_walkable
+
+	# Check sentinal for invalid tile
+	var kind := get_kind(pos)
+	if kind == -1:
+		return false
+
+	var mechanics: TileMechanicsDefinition = TILE_MECHANICS_DEFS[kind]
+	return mechanics.is_walkable
 
 
 func is_transparent(pos: Vector2i) -> bool:
@@ -122,5 +128,7 @@ func is_in_bounds(pos: Vector2i) -> bool:
 	return pos.x >= 0 and pos.x < width and pos.y >= 0 and pos.y < height
 
 
-func grid_to_index(pos: Vector2i) -> int:
-	return pos.y * width + pos.x
+func grid_to_index(grid_position: Vector2i) -> int:
+	if not is_in_bounds(grid_position):
+		return -1
+	return grid_position.y * width + grid_position.x
