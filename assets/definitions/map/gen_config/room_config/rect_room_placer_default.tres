@@ -1,7 +1,9 @@
 [gd_resource type="Resource" script_class="RectRoomPlacer" load_steps=2 format=3 uid="uid://y7j8xel3q5xk"]
 
-[ext_resource type="Script" uid="uid://frswhralkobl" path="res://src/Map/Generation/Rooms/rect_room_placer.gd" id="1_hvk5w"]
+[ext_resource type="Script" uid="uid://frswhralkobl" path="res://src/Map/Generation/Rooms/rect_room_placer.gd" id="1_hqnak"]
 
 [resource]
-script = ExtResource("1_hvk5w")
+script = ExtResource("1_hqnak")
+max_rooms = 50
+placement_attempts = 200
 metadata/_custom_type_script = "uid://frswhralkobl"

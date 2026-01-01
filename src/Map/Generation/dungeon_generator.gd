@@ -25,6 +25,11 @@ func generate_into(map_data: MapData) -> GenerationResult:
 	if config.corridor_carver == null:
 		push_error("DungeonGenerator: config.corridor_carver is null.")
 		return GenerationResult.new()
+		
+	if config.room_connector == null:
+		push_error("DungeonGenerator: config.room_connector is null.")
+		_active_map_data = null
+		return GenerationResult.new()
 
 	_active_map_data = map_data
 
@@ -33,16 +38,20 @@ func generate_into(map_data: MapData) -> GenerationResult:
 	var result := GenerationResult.new()
 
 	var rooms: Array[Rect2i] = config.room_placer.create_rooms(map_data, _rng, config)
+	
 	for r in rooms:
 		_carve_room(r)
 		result.rooms.append(r)
 		result.room_centers.append(_rect_center(r))
 
-	config.corridor_carver.connect_rooms(
+	var edges: Array[RoomEdge] = config.room_connector.build_edges(_rng, result.room_centers)
+
+	config.corridor_carver.carve_edges(
 		map_data,
 		_rng,
 		config,
 		result.room_centers,
+		edges,
 		Callable(self, "_set_floor")
 	)
 

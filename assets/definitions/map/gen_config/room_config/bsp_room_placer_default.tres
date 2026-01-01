@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="BspRoomPlacer" load_steps=2 format=3 uid="uid://bhlwhs4rjau1j"]
+
+[ext_resource type="Script" uid="uid://b85nvpru5yr10" path="res://src/Map/Generation/Rooms/bsp_room_placer.gd" id="1_50e5r"]
+
+[resource]
+script = ExtResource("1_50e5r")
+room_margin = 0
+metadata/_custom_type_script = "uid://b85nvpru5yr10"

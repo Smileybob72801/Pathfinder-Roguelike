@@ -2,11 +2,12 @@ class_name CorridorCarver
 
 extends Resource
 
-func connect_rooms(
+func carve_edges(
 	map_data: MapData,
 	rng: RandomNumberGenerator,
 	config: DungeonGenConfig,
 	room_centers: Array[Vector2i],
+	edges: Array[RoomEdge],
 	carve_floor: Callable
 ) -> void:
-	push_error("CorridorCarver.connect_rooms() not implemented")
+	push_error("CorridorCarver.carve_edges() not implemented")

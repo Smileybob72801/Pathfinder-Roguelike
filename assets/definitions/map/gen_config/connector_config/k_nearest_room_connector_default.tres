@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="KNearestRoomConnector" load_steps=2 format=3 uid="uid://brg1ibo036x54"]
+
+[ext_resource type="Script" uid="uid://bbdk5gyqlw3n8" path="res://src/Map/Generation/Connectors/k_nearest_room_connector.gd" id="1_s64j6"]
+
+[resource]
+script = ExtResource("1_s64j6")
+metadata/_custom_type_script = "uid://bbdk5gyqlw3n8"

@@ -6,13 +6,13 @@ extends Resource
 @export var padding_from_border: int = 1
 
 @export_category("Rooms")
-@export var max_rooms: int = 30
 @export var room_min_size: int = 6
 @export var room_max_size: int = 10
 @export var room_spacing: int = 1 # extra gap between rooms
-@export var room_placer: RoomPlacer
 
-@export_category("Corridors")
+@export_category("Components")
+@export var room_placer: RoomPlacer
+@export var room_connector: RoomConnector
 @export var corridor_carver: CorridorCarver
 
 @export_category("Tiles")
