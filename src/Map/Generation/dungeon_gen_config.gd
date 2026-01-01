@@ -10,6 +10,9 @@ extends Resource
 @export var room_max_size: int = 10
 @export var room_spacing: int = 1 # extra gap between rooms
 
+@export_category("Corridors")
+@export var corridor_widths: CorridorWidthDistribution
+
 @export_category("Components")
 @export var room_placer: RoomPlacer
 @export var room_connector: RoomConnector

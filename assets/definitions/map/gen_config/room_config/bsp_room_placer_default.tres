@@ -4,5 +4,4 @@
 
 [resource]
 script = ExtResource("1_50e5r")
-room_margin = 0
 metadata/_custom_type_script = "uid://b85nvpru5yr10"

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CompositeRoomConnector" load_steps=5 format=3 uid="uid://c2pbk8ivfvd28"]
+
+[ext_resource type="Script" uid="uid://bjap5dlgv7a3y" path="res://src/Map/Generation/Connectors/room_connector.gd" id="1_8v8g7"]
+[ext_resource type="Resource" uid="uid://bpns8k72g4b2g" path="res://assets/definitions/map/gen_config/connector_config/mst_backbone.tres" id="1_i7o30"]
+[ext_resource type="Script" uid="uid://bae4kvich8p8k" path="res://src/Map/Generation/Connectors/composite_room_connector.gd" id="2_rk8o5"]
+[ext_resource type="Resource" uid="uid://i7h2c2oghh0f" path="res://assets/definitions/map/gen_config/connector_config/knearest_loops.tres" id="3_5r1gx"]
+
+[resource]
+script = ExtResource("2_rk8o5")
+base_connector = ExtResource("1_i7o30")
+extra_connectors = Array[ExtResource("1_8v8g7")]([ExtResource("3_5r1gx")])
+metadata/_custom_type_script = "uid://bae4kvich8p8k"

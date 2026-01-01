@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_hqnak")
-max_rooms = 50
-placement_attempts = 200
+max_rooms = 100
+placement_attempts = 300
 metadata/_custom_type_script = "uid://frswhralkobl"

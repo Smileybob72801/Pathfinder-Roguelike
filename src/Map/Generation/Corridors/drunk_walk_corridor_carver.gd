@@ -15,17 +15,24 @@ func carve_edges(
 	carve_floor: Callable
 ) -> void:
 	for e in edges:
-		_connect(map_data, rng, room_centers[e.a], room_centers[e.b], carve_floor)
+		var width: int = _pick_width(rng, config)
+		_connect(map_data, rng, room_centers[e.a], room_centers[e.b], width, carve_floor)
+
+func _pick_width(rng: RandomNumberGenerator, config: DungeonGenConfig) -> int:
+	if config.corridor_widths == null:
+		return 1
+	return maxi(1, config.corridor_widths.pick(rng))
 
 func _connect(
 	map_data: MapData,
 	rng: RandomNumberGenerator,
 	start: Vector2i,
 	target: Vector2i,
+	width: int,
 	carve_floor: Callable
 ) -> void:
 	var pos: Vector2i = start
-	carve_floor.call(pos)
+	_carve_blob(map_data, pos, width, carve_floor)
 
 	var steps: int = 0
 	while pos != target and steps < max_steps_per_connection:
@@ -62,7 +69,17 @@ func _connect(
 			break
 
 		pos = next
-		carve_floor.call(pos)
+		_carve_blob(map_data, pos, width, carve_floor)
+
+func _carve_blob(map_data: MapData, center: Vector2i, width: int, carve_floor: Callable) -> void:
+	var half_low: int = int(width / 2)
+	var half_high: int = width - half_low - 1
+
+	for y in range(center.y - half_low, center.y + half_high + 1):
+		for x in range(center.x - half_low, center.x + half_high + 1):
+			var p: Vector2i = Vector2i(x, y)
+			if map_data.is_in_bounds(p):
+				carve_floor.call(p)
 
 func _signi(v: int) -> int:
 	if v < 0:

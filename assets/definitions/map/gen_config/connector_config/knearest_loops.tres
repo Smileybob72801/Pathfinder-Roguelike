@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="KNearestExtraEdgesConnector" load_steps=2 format=3 uid="uid://i7h2c2oghh0f"]
+
+[ext_resource type="Script" uid="uid://cbrjcmw3bi2cv" path="res://src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd" id="1_hdcr8"]
+
+[resource]
+script = ExtResource("1_hdcr8")
+k = 4
+max_extra_edges = 30
+metadata/_custom_type_script = "uid://cbrjcmw3bi2cv"

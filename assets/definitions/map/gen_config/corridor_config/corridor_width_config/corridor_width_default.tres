@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CorridorWidthDistribution" load_steps=5 format=3 uid="uid://c34tcx7qq64yn"]
+
+[ext_resource type="Script" uid="uid://hndlt4isstri" path="res://src/Map/Generation/Corridors/weighted_int.gd" id="1_x3tst"]
+[ext_resource type="Script" uid="uid://dd3qrcnby84yg" path="res://src/Map/Generation/Corridors/corridor_width_distribution.gd" id="2_53mrq"]
+
+[sub_resource type="Resource" id="Resource_x3tst"]
+script = ExtResource("1_x3tst")
+weight = 0.25
+metadata/_custom_type_script = "uid://hndlt4isstri"
+
+[sub_resource type="Resource" id="Resource_53mrq"]
+script = ExtResource("1_x3tst")
+value = 2
+weight = 0.75
+metadata/_custom_type_script = "uid://hndlt4isstri"
+
+[resource]
+script = ExtResource("2_53mrq")
+options = Array[ExtResource("1_x3tst")]([SubResource("Resource_x3tst"), SubResource("Resource_53mrq")])
+metadata/_custom_type_script = "uid://dd3qrcnby84yg"
