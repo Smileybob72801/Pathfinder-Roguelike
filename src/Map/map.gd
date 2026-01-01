@@ -1,5 +1,9 @@
 class_name Map
+
 extends Node2D
+
+@onready var dungeon_generator: DungeonGenerator = $DungeonGenerator
+var gen_result: DungeonGenerator.GenerationResult
 
 @export var map_width: int = 80
 @export var map_height: int = 45
@@ -16,6 +20,8 @@ func _ready() -> void:
 
 	registry = TileVisualRegistry.new()
 	map_data = MapData.new(map_width, map_height, registry)
+	
+	gen_result = dungeon_generator.generate_into(map_data)
 
 	render_all()
 
@@ -55,3 +61,9 @@ func _draw_cell(layer: TileMapLayer, cell: Vector2i) -> void:
 	var coords: Vector2i = def.atlas_coords_options[variant % def.atlas_coords_options.size()]
 
 	layer.set_cell(cell, def.source_id, coords, def.alternative_tile)
+
+
+func get_player_spawn() -> Vector2i:
+	if gen_result != null and not gen_result.room_centers.is_empty():
+		return gen_result.room_centers[0]
+	return Vector2i(map_width / 2, map_height / 2)

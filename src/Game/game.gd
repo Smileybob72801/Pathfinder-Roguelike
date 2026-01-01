@@ -1,4 +1,5 @@
 class_name Game
+
 extends Node2D
 
 const player_definition: EntityDefinition = preload("res://assets/definitions/entities/actors/entity_definition_player.tres")
@@ -9,9 +10,14 @@ const player_definition: EntityDefinition = preload("res://assets/definitions/en
 @onready var map: Map = $Map
 
 func _ready() -> void:
-	var player_start_pos: Vector2i = Grid.world_to_grid(get_viewport_rect().size.floor() / 2)
+	var player_start_pos: Vector2i = map.get_player_spawn()
 	player = Entity.new(player_start_pos, player_definition)
 	entities.add_child(player)
+	
+	var camera: Camera2D = $Camera2D
+	remove_child(camera)
+	player.add_child(camera)
+	
 	var npc := Entity.new(player_start_pos + Vector2i.RIGHT, player_definition)
 	npc.modulate = Color.ORANGE_RED
 	entities.add_child(npc)

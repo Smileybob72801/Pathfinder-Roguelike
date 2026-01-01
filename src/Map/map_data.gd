@@ -50,21 +50,6 @@ func _initialize_tiles() -> void:
 	visual_set_ids.resize(cell_count)
 	variants.resize(cell_count)
 	
-	# Sentinel initialization (makes missing visuals obvious)
-	for i in range(cell_count):
-		kinds[i] = TileKind.FLOOR
-		visual_set_ids[i] = -1
-		variants[i] = 0
-
-	# Demo: fill the whole map with flagstone floor (variant 0 for now)
-	for y in range(height):
-		for x in range(width):
-			set_cell(Vector2i(x, y), TileKind.FLOOR, TileVisual.FLOOR_FLAGSTONE)
-
-	# Demo: wall segment (visible near origin)
-	for x in range(1, 5):
-		set_cell(Vector2i(x, 3), TileKind.WALL, TileVisual.WALL_STONE_BRICK, 0)
-
 
 func set_cell(pos: Vector2i, kind: TileKind, visual: TileVisual, variant: int = -1) -> void:
 	if not is_in_bounds(pos):

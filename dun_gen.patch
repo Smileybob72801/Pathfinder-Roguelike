@@ -1,0 +1,176 @@
+diff --git a/src/Game/event_handler.gd b/src/Game/event_handler.gd
+index 313a806..246a1b1 100644
+--- a/src/Game/event_handler.gd
++++ b/src/Game/event_handler.gd
+@@ -2,21 +2,34 @@ class_name EventHandler
+ 
+ extends Node
+ 
++const MOVE_DELAY_MS := 50
++
++var _last_move_time_ms: int = 0
++
++
+ func get_action() -> Action:
++	var now_ms := Time.get_ticks_msec()
++
++	if now_ms - _last_move_time_ms < MOVE_DELAY_MS:
++		return null
++
+ 	var action: Action = null
+-	
+-	var moveDistance: int = 1
+-	
+-	if Input.is_action_just_pressed("ui_up"):
+-		action = MovementAction.new(0, -(moveDistance))
+-	elif Input.is_action_just_pressed("ui_down"):
+-		action = MovementAction.new(0, moveDistance)
+-	elif Input.is_action_just_pressed("ui_left"):
+-		action = MovementAction.new(-(moveDistance), 0)
+-	elif Input.is_action_just_pressed("ui_right"):
+-		action = MovementAction.new(moveDistance, 0)
+-		
++	var move_distance: int = 1
++
++	if Input.is_action_pressed("ui_up"):
++		action = MovementAction.new(0, -move_distance)
++	elif Input.is_action_pressed("ui_down"):
++		action = MovementAction.new(0, move_distance)
++	elif Input.is_action_pressed("ui_left"):
++		action = MovementAction.new(-move_distance, 0)
++	elif Input.is_action_pressed("ui_right"):
++		action = MovementAction.new(move_distance, 0)
++
++	if action:
++		_last_move_time_ms = now_ms
++		return action
++
+ 	if Input.is_action_just_pressed("ui_cancel"):
+-		action = EscapeAction.new()
+-		
+-	return action
++		return EscapeAction.new()
++
++	return null
+diff --git a/src/Game/game.gd b/src/Game/game.gd
+index e6357ea..2703f23 100644
+--- a/src/Game/game.gd
++++ b/src/Game/game.gd
+@@ -1,4 +1,5 @@
+ class_name Game
++
+ extends Node2D
+ 
+ const player_definition: EntityDefinition = preload("res://assets/definitions/entities/actors/entity_definition_player.tres")
+@@ -9,9 +10,14 @@ const player_definition: EntityDefinition = preload("res://assets/definitions/en
+ @onready var map: Map = $Map
+ 
+ func _ready() -> void:
+-	var player_start_pos: Vector2i = Grid.world_to_grid(get_viewport_rect().size.floor() / 2)
++	var player_start_pos: Vector2i = map.get_player_spawn()
+ 	player = Entity.new(player_start_pos, player_definition)
+ 	entities.add_child(player)
++	
++	var camera: Camera2D = $Camera2D
++	remove_child(camera)
++	player.add_child(camera)
++	
+ 	var npc := Entity.new(player_start_pos + Vector2i.RIGHT, player_definition)
+ 	npc.modulate = Color.ORANGE_RED
+ 	entities.add_child(npc)
+diff --git a/src/Game/game.tscn b/src/Game/game.tscn
+index e5dcf72..a718069 100644
+--- a/src/Game/game.tscn
++++ b/src/Game/game.tscn
+@@ -1,9 +1,11 @@
+-[gd_scene load_steps=5 format=3 uid="uid://h55jsqf73lyx"]
++[gd_scene load_steps=7 format=3 uid="uid://h55jsqf73lyx"]
+ 
+ [ext_resource type="Script" uid="uid://c6si3ker444vh" path="res://src/Game/game.gd" id="1_60cvd"]
+ [ext_resource type="Script" uid="uid://cn2nl54elf2lj" path="res://src/Map/map.gd" id="3_3s8ir"]
+ [ext_resource type="TileSet" uid="uid://bp3jqmorgaduo" path="res://assets/tilesets/dcss_tileset.tres" id="3_bob6j"]
+ [ext_resource type="Script" uid="uid://bojmjnun6jh7q" path="res://src/Game/event_handler.gd" id="3_sag4g"]
++[ext_resource type="Script" uid="uid://pe54was57ngv" path="res://src/Map/Generation/dungeon_generator.gd" id="5_3s8ir"]
++[ext_resource type="Resource" uid="uid://y4cfj10mjhe8" path="res://assets/definitions/map/gen_config/dungeon_gen_config_default.tres" id="6_7m6cs"]
+ 
+ [node name="Game" type="Node2D"]
+ script = ExtResource("1_60cvd")
+@@ -13,6 +15,7 @@ script = ExtResource("3_sag4g")
+ 
+ [node name="Map" type="Node2D" parent="." node_paths=PackedStringArray("floor_layer", "wall_layer")]
+ script = ExtResource("3_3s8ir")
++map_height = 80
+ floor_layer = NodePath("FloorLayer")
+ wall_layer = NodePath("WallLayer")
+ 
+@@ -22,4 +25,10 @@ tile_set = ExtResource("3_bob6j")
+ [node name="WallLayer" type="TileMapLayer" parent="Map"]
+ tile_set = ExtResource("3_bob6j")
+ 
++[node name="DungeonGenerator" type="Node" parent="Map"]
++script = ExtResource("5_3s8ir")
++config = ExtResource("6_7m6cs")
++
+ [node name="Entities" type="Node2D" parent="."]
++
++[node name="Camera2D" type="Camera2D" parent="."]
+diff --git a/src/Map/map.gd b/src/Map/map.gd
+index f18dbaf..8feffc5 100644
+--- a/src/Map/map.gd
++++ b/src/Map/map.gd
+@@ -1,6 +1,10 @@
+ class_name Map
++
+ extends Node2D
+ 
++@onready var dungeon_generator: DungeonGenerator = $DungeonGenerator
++var gen_result: DungeonGenerator.GenerationResult
++
+ @export var map_width: int = 80
+ @export var map_height: int = 45
+ 
+@@ -16,6 +20,8 @@ func _ready() -> void:
+ 
+ 	registry = TileVisualRegistry.new()
+ 	map_data = MapData.new(map_width, map_height, registry)
++	
++	gen_result = dungeon_generator.generate_into(map_data)
+ 
+ 	render_all()
+ 
+@@ -55,3 +61,9 @@ func _draw_cell(layer: TileMapLayer, cell: Vector2i) -> void:
+ 	var coords: Vector2i = def.atlas_coords_options[variant % def.atlas_coords_options.size()]
+ 
+ 	layer.set_cell(cell, def.source_id, coords, def.alternative_tile)
++
++
++func get_player_spawn() -> Vector2i:
++	if gen_result != null and not gen_result.room_centers.is_empty():
++		return gen_result.room_centers[0]
++	return Vector2i(map_width / 2, map_height / 2)
+diff --git a/src/Map/map_data.gd b/src/Map/map_data.gd
+index 9e21cfa..ca40742 100644
+--- a/src/Map/map_data.gd
++++ b/src/Map/map_data.gd
+@@ -50,21 +50,6 @@ func _initialize_tiles() -> void:
+ 	visual_set_ids.resize(cell_count)
+ 	variants.resize(cell_count)
+ 	
+-	# Sentinel initialization (makes missing visuals obvious)
+-	for i in range(cell_count):
+-		kinds[i] = TileKind.FLOOR
+-		visual_set_ids[i] = -1
+-		variants[i] = 0
+-
+-	# Demo: fill the whole map with flagstone floor (variant 0 for now)
+-	for y in range(height):
+-		for x in range(width):
+-			set_cell(Vector2i(x, y), TileKind.FLOOR, TileVisual.FLOOR_FLAGSTONE)
+-
+-	# Demo: wall segment (visible near origin)
+-	for x in range(1, 5):
+-		set_cell(Vector2i(x, 3), TileKind.WALL, TileVisual.WALL_STONE_BRICK, 0)
+-
+ 
+ func set_cell(pos: Vector2i, kind: TileKind, visual: TileVisual, variant: int = -1) -> void:
+ 	if not is_in_bounds(pos):
