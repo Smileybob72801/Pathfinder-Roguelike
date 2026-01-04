@@ -13,16 +13,24 @@ script = ExtResource("1_60cvd")
 [node name="EventHandler" type="Node" parent="."]
 script = ExtResource("3_sag4g")
 
-[node name="Map" type="Node2D" parent="." node_paths=PackedStringArray("floor_layer", "wall_layer")]
+[node name="Map" type="Node2D" parent="." node_paths=PackedStringArray("floor_layer", "wall_layer", "fog_layer")]
 script = ExtResource("3_3s8ir")
-map_height = 80
+map_width = 100
+map_height = 100
 floor_layer = NodePath("FloorLayer")
 wall_layer = NodePath("WallLayer")
+fog_layer = NodePath("FogLayer")
+fog_full_atlas_coords = Vector2i(23, 94)
+fog_dim_light_atlas_coords = Vector2i(19, 50)
+fog_dim_atlas_coords = Vector2i(20, 50)
 
 [node name="FloorLayer" type="TileMapLayer" parent="Map"]
 tile_set = ExtResource("3_bob6j")
 
 [node name="WallLayer" type="TileMapLayer" parent="Map"]
+tile_set = ExtResource("3_bob6j")
+
+[node name="FogLayer" type="TileMapLayer" parent="Map"]
 tile_set = ExtResource("3_bob6j")
 
 [node name="DungeonGenerator" type="Node" parent="Map"]

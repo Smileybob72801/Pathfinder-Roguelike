@@ -1,0 +1,882 @@
+diff --git a/assets/definitions/map/gen_config/dungeon_gen_config_default.tres b/assets/definitions/map/gen_config/dungeon_gen_config_default.tres
+index 74cdbca..d602c04 100644
+--- a/assets/definitions/map/gen_config/dungeon_gen_config_default.tres
++++ b/assets/definitions/map/gen_config/dungeon_gen_config_default.tres
+@@ -1,17 +1,17 @@
+ [gd_resource type="Resource" script_class="DungeonGenConfig" load_steps=6 format=3 uid="uid://y4cfj10mjhe8"]
+ 
+ [ext_resource type="Resource" uid="uid://cw82wxgvglpal" path="res://assets/definitions/map/gen_config/corridor_config/l_corridor_carver_default.tres" id="1_rr7oy"]
+-[ext_resource type="Resource" uid="uid://y7j8xel3q5xk" path="res://assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres" id="2_nuecr"]
+ [ext_resource type="Resource" uid="uid://c2pbk8ivfvd28" path="res://assets/definitions/map/gen_config/connector_config/mst_plus_loops.tres" id="2_nw1ek"]
+ [ext_resource type="Resource" uid="uid://c34tcx7qq64yn" path="res://assets/definitions/map/gen_config/corridor_config/corridor_width_config/corridor_width_default.tres" id="2_t8axl"]
+ [ext_resource type="Script" uid="uid://bu4d3486tsfs3" path="res://src/Map/Generation/dungeon_gen_config.gd" id="3_nw1ek"]
++[ext_resource type="Resource" uid="uid://bhlwhs4rjau1j" path="res://assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres" id="4_nw1ek"]
+ 
+ [resource]
+ script = ExtResource("3_nw1ek")
+-room_min_size = 5
+-room_max_size = 20
++room_min_size = 4
++room_max_size = 16
+ corridor_widths = ExtResource("2_t8axl")
+-room_placer = ExtResource("2_nuecr")
++room_placer = ExtResource("4_nw1ek")
+ room_connector = ExtResource("2_nw1ek")
+ corridor_carver = ExtResource("1_rr7oy")
+ metadata/_custom_type_script = "uid://bu4d3486tsfs3"
+diff --git a/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres b/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres
+index 31f62f3..6eeb814 100644
+--- a/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres
++++ b/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres
+@@ -4,4 +4,5 @@
+ 
+ [resource]
+ script = ExtResource("1_50e5r")
++min_leaf_size = 5
+ metadata/_custom_type_script = "uid://b85nvpru5yr10"
+diff --git a/assets/definitions/map/tiles/mechanics/tile_mechanics_definition_wall.tres b/assets/definitions/map/tiles/mechanics/tile_mechanics_definition_wall.tres
+index d3e7f5a..3b82ef7 100644
+--- a/assets/definitions/map/tiles/mechanics/tile_mechanics_definition_wall.tres
++++ b/assets/definitions/map/tiles/mechanics/tile_mechanics_definition_wall.tres
+@@ -1,4 +1,4 @@
+-[gd_resource type="Resource" script_class="TileDefinition" load_steps=2 format=3 uid="uid://c1aca2u6n058b"]
++[gd_resource type="Resource" script_class="TileMechanicsDefinition" load_steps=2 format=3 uid="uid://c1aca2u6n058b"]
+ 
+ [ext_resource type="Script" uid="uid://cxd462ihqotw3" path="res://src/Map/tile_mechanics_definition.gd" id="1_jqyxr"]
+ 
+@@ -6,6 +6,4 @@
+ script = ExtResource("1_jqyxr")
+ is_walkable = false
+ is_transparent = false
+-source_id = 1
+-atlas_coords_options = Array[Vector2i]([Vector2i(10, 4)])
+ metadata/_custom_type_script = "uid://cxd462ihqotw3"
+diff --git a/assets/definitions/map/tiles/visuals/wall_stone_brick.tres b/assets/definitions/map/tiles/visuals/wall_stone_brick.tres
+index ed76c85..1e660e2 100644
+--- a/assets/definitions/map/tiles/visuals/wall_stone_brick.tres
++++ b/assets/definitions/map/tiles/visuals/wall_stone_brick.tres
+@@ -5,5 +5,5 @@
+ [resource]
+ script = ExtResource("1_0pcya")
+ source_id = 1
+-atlas_coords_options = Array[Vector2i]([Vector2i(10, 4), Vector2i(12, 4), Vector2i(14, 4)])
++atlas_coords_options = Array[Vector2i]([Vector2i(1, 9)])
+ metadata/_custom_type_script = "uid://by5snrwe3dvv1"
+diff --git a/assets/textures/ProjectUtumno_full.png b/assets/textures/ProjectUtumno_full.png
+index 2cecf93..f3237d4 100644
+Binary files a/assets/textures/ProjectUtumno_full.png and b/assets/textures/ProjectUtumno_full.png differ
+diff --git a/assets/tilesets/dcss_tileset.tres b/assets/tilesets/dcss_tileset.tres
+index 6faaa8a..85dffd7 100644
+--- a/assets/tilesets/dcss_tileset.tres
++++ b/assets/tilesets/dcss_tileset.tres
+@@ -6041,6 +6041,7 @@ texture_region_size = Vector2i(32, 32)
+ 20:94/0 = 0
+ 21:94/0 = 0
+ 22:94/0 = 0
++23:94/0 = 0
+ 
+ [resource]
+ tile_size = Vector2i(32, 32)
+diff --git a/src/Entities/entity.gd b/src/Entities/entity.gd
+index efcc1a0..8ab1c40 100644
+--- a/src/Entities/entity.gd
++++ b/src/Entities/entity.gd
+@@ -6,6 +6,9 @@ var grid_position: Vector2i:
+ 	set(value):
+ 		grid_position = value
+ 		position = Grid.grid_to_world(grid_position)
++		
++var vision_state: VisionState = null
++
+ 
+ func _init(start_position: Vector2i, entity_definition: EntityDefinition) -> void:
+ 	centered = false
+diff --git a/src/Game/game.gd b/src/Game/game.gd
+index 2703f23..a32396a 100644
+--- a/src/Game/game.gd
++++ b/src/Game/game.gd
+@@ -9,11 +9,22 @@ const player_definition: EntityDefinition = preload("res://assets/definitions/en
+ @onready var entities: Node2D = $Entities
+ @onready var map: Map = $Map
+ 
++var _fov: FieldOfView = FieldOfView.new()
++var _light_system := LightSystem.new()
++var _illumination: IlluminationMap
++
++# Debug tools
++var _torch_spawner: TorchSpawner = TorchSpawner.new()
++
+ func _ready() -> void:
+ 	var player_start_pos: Vector2i = map.get_player_spawn()
+ 	player = Entity.new(player_start_pos, player_definition)
+ 	entities.add_child(player)
+ 	
++	# Player gets explored memory
++	# TODO: enemies can get visible-only later.
++	player.vision_state = VisionState.new(map.map_data.width, map.map_data.height, true)
++	
+ 	var camera: Camera2D = $Camera2D
+ 	remove_child(camera)
+ 	player.add_child(camera)
+@@ -22,10 +33,74 @@ func _ready() -> void:
+ 	npc.modulate = Color.ORANGE_RED
+ 	entities.add_child(npc)
+ 	
++	_illumination = IlluminationMap.new(map.map_data.width, map.map_data.height, LightLevel.DARKNESS)
++	_update_player_vision_and_light()
++	
+ func get_map_data() -> MapData:
+ 	return map.map_data
+ 
+ func _physics_process(_delta: float) -> void:
+ 	var action: Action = event_handler.get_action()
+ 	if action:
++		var before := player.grid_position
+ 		action.perform(self, player)
++		
++		if player.grid_position != before:
++			_update_player_vision_and_light()
++
++
++func _update_player_vision_and_light() -> void:
++	
++	# Example radii: torch normal 4, dim 8
++	var normal_radius := 4
++	var dim_radius := 8
++
++	var lights: Array[LightSource] = []
++
++	# Player torch
++	lights.append(LightSource.new(player.grid_position, normal_radius, dim_radius))
++
++	# Add all spawned test torches:
++	lights.append_array(_torch_spawner.build_light_sources(normal_radius, dim_radius))
++
++	_light_system.rebuild_illumination(map.map_data, _illumination, lights)
++	var max_los := 50
++
++	# LoS candidates
++	var los_cells := _fov.compute_cells(map.map_data, player.grid_position, max_los)
++	
++	player.vision_state.clear_visible()
++	
++	var visible_cells: Array[Vector2i] = []
++	
++	# Interpret illumination for a normal-vision human:
++	# Visible if illumination is at least DIM.
++	# TODO: Handle darkvision, low light, blindsense, etc..
++	for cell in los_cells:
++		var lvl := _illumination.get_level(cell)
++
++		if lvl >= LightLevel.DIM:
++			player.vision_state.set_visible(cell, true)
++			player.vision_state.set_perceived_light(cell, lvl)
++			visible_cells.append(cell)
++
++	# Rendering uses explored + visible + perceived_light
++	map.apply_player_vision(player.vision_state, visible_cells)
++
++
++func spawn_test_torch(cell: Vector2i) -> void:
++	# Optional safety checks (recommended)
++	if not map.map_data.is_in_bounds(cell):
++		return
++	if map.map_data.get_kind(cell) == MapData.TileKind.WALL:
++		return
++
++	_torch_spawner.add_torch(cell)
++	_update_player_vision_and_light()
++	
++func _unhandled_input(event: InputEvent) -> void:
++	if event is InputEventMouseButton and event.pressed:
++		var mb := event as InputEventMouseButton
++		if mb.button_index == MOUSE_BUTTON_RIGHT:
++			var cell := Grid.world_to_grid(get_global_mouse_position())
++			spawn_test_torch(cell)
+diff --git a/src/Game/game.tscn b/src/Game/game.tscn
+index a718069..9c6238d 100644
+--- a/src/Game/game.tscn
++++ b/src/Game/game.tscn
+@@ -13,11 +13,16 @@ script = ExtResource("1_60cvd")
+ [node name="EventHandler" type="Node" parent="."]
+ script = ExtResource("3_sag4g")
+ 
+-[node name="Map" type="Node2D" parent="." node_paths=PackedStringArray("floor_layer", "wall_layer")]
++[node name="Map" type="Node2D" parent="." node_paths=PackedStringArray("floor_layer", "wall_layer", "fog_layer")]
+ script = ExtResource("3_3s8ir")
+-map_height = 80
++map_width = 100
++map_height = 100
+ floor_layer = NodePath("FloorLayer")
+ wall_layer = NodePath("WallLayer")
++fog_layer = NodePath("FogLayer")
++fog_full_atlas_coords = Vector2i(23, 94)
++fog_dim_light_atlas_coords = Vector2i(19, 50)
++fog_dim_atlas_coords = Vector2i(20, 50)
+ 
+ [node name="FloorLayer" type="TileMapLayer" parent="Map"]
+ tile_set = ExtResource("3_bob6j")
+@@ -25,6 +30,9 @@ tile_set = ExtResource("3_bob6j")
+ [node name="WallLayer" type="TileMapLayer" parent="Map"]
+ tile_set = ExtResource("3_bob6j")
+ 
++[node name="FogLayer" type="TileMapLayer" parent="Map"]
++tile_set = ExtResource("3_bob6j")
++
+ [node name="DungeonGenerator" type="Node" parent="Map"]
+ script = ExtResource("5_3s8ir")
+ config = ExtResource("6_7m6cs")
+diff --git a/src/Map/Generation/Rooms/bsp_room_placer.gd b/src/Map/Generation/Rooms/bsp_room_placer.gd
+index c1e6f0c..1816e2d 100644
+--- a/src/Map/Generation/Rooms/bsp_room_placer.gd
++++ b/src/Map/Generation/Rooms/bsp_room_placer.gd
+@@ -2,10 +2,24 @@ class_name BspRoomPlacer
+ 
+ extends RoomPlacer
+ 
++@export_category("Variety")
++@export_range(0.0, 1.0, 0.01) var blank_leaf_chance: float = 0.10  # 15% leaves produce no room
++# Choose room size as a fraction of the leaf's inner space (more variety than uniform absolute sizes)
++@export_range(0.0, 1.0, 0.01) var fill_min: float = 0.35 # room uses at least 45% of inner width/height
++@export_range(0.0, 1.0, 0.01) var fill_max: float = 0.90 # room uses up to 95% of inner width/height
++
++@export_range(0.0, 1.0, 0.01) var stop_split_chance: float = 0.10
++
++# Bias toward smaller or larger rooms within the [fill_min..fill_max] range:
++# 0.0 -> tends larger, 0.5 -> neutral, 1.0 -> tends smaller
++@export_range(0.0, 1.0, 0.01) var small_room_bias: float = 0.50
++
+ @export_category("BSP")
+-@export var min_leaf_size: int = 14
+-@export var max_depth: int = 5
+-@export var split_bias: float = 0.55 # >0.5 favors splitting along the longer axis
++@export var min_leaf_size: int = 12
++@export var max_depth: int = 6
++@export var split_bias: float = 0.65 # >0.5 favors splitting along the longer axis
++@export var split_margin: int = 2
++
+ 
+ @export_category("Rooms Inside Leaves")
+ @export var room_margin: int = 1        # empty border inside leaf
+@@ -35,12 +49,17 @@ func create_rooms(map_data: MapData, rng: RandomNumberGenerator, config: Dungeon
+ 	return rooms
+ 
+ func _split_leaf(rng: RandomNumberGenerator, leaf: Rect2i, depth: int, out_leaves: Array[Rect2i]) -> void:
++	if depth > 0 and stop_split_chance > 0.0 and rng.randf() < stop_split_chance:
++		out_leaves.append(leaf)
++		return
++		
+ 	if depth >= max_depth:
+ 		out_leaves.append(leaf)
+ 		return
+ 
+-	var can_split_h := leaf.size.y >= (min_leaf_size * 2)
+-	var can_split_v := leaf.size.x >= (min_leaf_size * 2)
++	var min_child: int = min_leaf_size + split_margin
++	var can_split_h: bool = leaf.size.y >= (min_child * 2)
++	var can_split_v: bool = leaf.size.x >= (min_child * 2)
+ 
+ 	if not can_split_h and not can_split_v:
+ 		out_leaves.append(leaf)
+@@ -59,7 +78,7 @@ func _split_leaf(rng: RandomNumberGenerator, leaf: Rect2i, depth: int, out_leave
+ 		split_h = can_split_h
+ 
+ 	if split_h:
+-		var split_y := rng.randi_range(min_leaf_size, leaf.size.y - min_leaf_size)
++		var split_y: int = rng.randi_range(min_child, leaf.size.y - min_child)
+ 		var top := Rect2i(leaf.position.x, leaf.position.y, leaf.size.x, split_y)
+ 		var bottom := Rect2i(leaf.position.x, leaf.position.y + split_y, leaf.size.x, leaf.size.y - split_y)
+ 		_split_leaf(rng, top, depth + 1, out_leaves)
+@@ -71,7 +90,12 @@ func _split_leaf(rng: RandomNumberGenerator, leaf: Rect2i, depth: int, out_leave
+ 		_split_leaf(rng, left, depth + 1, out_leaves)
+ 		_split_leaf(rng, right, depth + 1, out_leaves)
+ 
++
+ func _make_room_in_leaf(map_data: MapData, rng: RandomNumberGenerator, config: DungeonGenConfig, leaf: Rect2i) -> Variant:
++	# Optional: allow blank leaves
++	if blank_leaf_chance > 0.0 and rng.randf() < blank_leaf_chance:
++		return null
++
+ 	var inner := Rect2i(
+ 		leaf.position.x + room_margin,
+ 		leaf.position.y + room_margin,
+@@ -82,23 +106,49 @@ func _make_room_in_leaf(map_data: MapData, rng: RandomNumberGenerator, config: D
+ 	if inner.size.x < config.room_min_size or inner.size.y < config.room_min_size:
+ 		return null
+ 
+-	var max_w := mini(inner.size.x, config.room_max_size)
+-	var max_h := mini(inner.size.y, config.room_max_size)
++	# Compute room size relative to leaf size (this is the main variety driver)
++	var max_w_cap: int = mini(inner.size.x, config.room_max_size)
++	var max_h_cap: int = mini(inner.size.y, config.room_max_size)
+ 
+-	var w := rng.randi_range(config.room_min_size, max_w)
+-	var h := rng.randi_range(config.room_min_size, max_h)
++	var w: int = _pick_dim_from_fill(rng, inner.size.x, config.room_min_size, max_w_cap)
++	var h: int = _pick_dim_from_fill(rng, inner.size.y, config.room_min_size, max_h_cap)
+ 
+ 	if not allow_non_square_rooms:
+-		var s := mini(w, h)
++		var s: int = mini(w, h)
+ 		w = s
+ 		h = s
+ 
+-	var max_x := inner.position.x + inner.size.x - w
+-	var max_y := inner.position.y + inner.size.y - h
++	var max_x: int = inner.position.x + inner.size.x - w
++	var max_y: int = inner.position.y + inner.size.y - h
+ 	if max_x < inner.position.x or max_y < inner.position.y:
+ 		return null
+ 
+-	var x := rng.randi_range(inner.position.x, max_x)
+-	var y := rng.randi_range(inner.position.y, max_y)
++	var x: int = rng.randi_range(inner.position.x, max_x)
++	var y: int = rng.randi_range(inner.position.y, max_y)
+ 
+ 	return Rect2i(x, y, w, h)
++
++
++func _pick_dim_from_fill(rng: RandomNumberGenerator, inner_dim: int, min_dim: int, max_dim: int) -> int:
++	# Fill fraction in [fill_min..fill_max], biased by small_room_bias
++	var t: float = rng.randf()
++
++	# Bias curve: small_room_bias < 0.5 -> tends larger, >0.5 -> tends smaller
++	# Keep it simple and predictable: use power curve around 0.5
++	var bias: float = clampf(small_room_bias, 0.0, 1.0)
++	if bias < 0.5:
++		# Larger rooms more likely
++		var p_big: float = lerpf(0.6, 3.0, (0.5 - bias) / 0.5)
++		t = pow(t, 1.0 / p_big)
++	elif bias > 0.5:
++		# Smaller rooms more likely
++		var p_small: float = lerpf(0.6, 3.0, (bias - 0.5) / 0.5)
++		t = pow(t, p_small)
++
++	var fill: float = lerpf(fill_min, fill_max, t)
++	var target: int = int(round(inner_dim * fill))
++
++	# Still respect your global min/max constraints
++	target = maxi(target, min_dim)
++	target = mini(target, max_dim)
++	return target
+diff --git a/src/Map/field_of_view.gd b/src/Map/field_of_view.gd
+new file mode 100644
+index 0000000..54d8636
+--- /dev/null
++++ b/src/Map/field_of_view.gd
+@@ -0,0 +1,114 @@
++class_name FieldOfView
++
++extends RefCounted
++
++# Recursive shadowcasting octant transforms
++const _MULTIPLIERS := [
++	[ 1, 0, 0, -1, -1, 0, 0,  1],
++	[ 0, 1, -1, 0,  0, -1, 1, 0],
++	[ 0, 1, 1,  0,  0, -1, -1, 0],
++	[ 1, 0, 0,  1, -1,  0,  0, -1]
++]
++
++# Returns the list of cells that ended up visible (for render diffs)
++func compute(map_data: MapData, vision: VisionState, origin: Vector2i, radius: int) -> Array[Vector2i]:
++	vision.clear_visible()
++
++	var visible_cells: Array[Vector2i] = []
++	_set_visible(map_data, vision, origin, visible_cells)
++
++	for o in range(8):
++		_cast_light(
++			map_data,
++			vision,
++			origin.x,
++			origin.y,
++			radius,
++			1,
++			1.0,
++			0.0,
++			_MULTIPLIERS[0][o],
++			_MULTIPLIERS[1][o],
++			_MULTIPLIERS[2][o],
++			_MULTIPLIERS[3][o],
++			visible_cells
++		)
++
++	return visible_cells
++
++
++func compute_cells(map_data: MapData, origin: Vector2i, radius: int) -> Array[Vector2i]:
++	var dummy := VisionState.new(map_data.width, map_data.height, false)
++	return compute(map_data, dummy, origin, radius)
++
++
++func _set_visible(map_data: MapData, vision: VisionState, pos: Vector2i, out_visible: Array[Vector2i]) -> void:
++	if not map_data.is_in_bounds(pos):
++		return
++	if vision.is_visible(pos):
++		return
++
++	vision.set_visible(pos, true)
++	out_visible.append(pos)
++
++
++func _cast_light(
++	map_data: MapData,
++	vision: VisionState,
++	ox: int,
++	oy: int,
++	radius: int,
++	row: int,
++	start_slope: float,
++	end_slope: float,
++	xx: int,
++	xy: int,
++	yx: int,
++	yy: int,
++	out_visible: Array[Vector2i]
++) -> void:
++	if start_slope < end_slope:
++		return
++
++	var next_start_slope := start_slope
++
++	for i in range(row, radius + 1):
++		var blocked := false
++		var dy := -i
++
++		for dx in range(-i, 1):
++			var l_slope := (dx - 0.5) / (dy + 0.5)
++			var r_slope := (dx + 0.5) / (dy - 0.5)
++
++			if start_slope < r_slope:
++				continue
++			if end_slope > l_slope:
++				break
++
++			var ax := ox + dx * xx + dy * xy
++			var ay := oy + dx * yx + dy * yy
++			var pos := Vector2i(ax, ay)
++
++			if not map_data.is_in_bounds(pos):
++				continue
++
++			# Opaque tiles are visible when they block a ray, so mark visible BEFORE checking transparency.
++			if Grid.distance_pf(Vector2i.ZERO, Vector2i(dx, dy)) <= radius:
++				_set_visible(map_data, vision, pos, out_visible)
++
++			var is_opaque := not map_data.is_transparent(pos)
++
++			if blocked:
++				if is_opaque:
++					next_start_slope = r_slope
++					continue
++				blocked = false
++				start_slope = next_start_slope
++			else:
++				if is_opaque:
++					blocked = true
++					next_start_slope = r_slope
++					_cast_light(map_data, vision, ox, oy, radius, i + 1, start_slope, l_slope, xx, xy, yx, yy, out_visible)
++
++		if blocked:
++			break
+diff --git a/src/Map/field_of_view.gd.uid b/src/Map/field_of_view.gd.uid
+new file mode 100644
+index 0000000..39c710e
+--- /dev/null
++++ b/src/Map/field_of_view.gd.uid
+@@ -0,0 +1 @@
++uid://cds2y1i2ltmxt
+diff --git a/src/Map/illumination_map.gd b/src/Map/illumination_map.gd
+new file mode 100644
+index 0000000..1bacd83
+--- /dev/null
++++ b/src/Map/illumination_map.gd
+@@ -0,0 +1,51 @@
++class_name IlluminationMap
++
++extends RefCounted
++
++var width: int
++var height: int
++
++# One byte per cell for LightLevel.*
++var level: PackedByteArray
++
++func _init(w: int, h: int, base_level: int) -> void:
++	width = w
++	height = h
++
++	var count := width * height
++	level = PackedByteArray()
++	level.resize(count)
++
++	fill(base_level)
++
++func _idx(pos: Vector2i) -> int:
++	return pos.y * width + pos.x
++
++func in_bounds(pos: Vector2i) -> bool:
++	return pos.x >= 0 and pos.y >= 0 and pos.x < width and pos.y < height
++
++func fill(base_level: int) -> void:
++	var v := LightLevel.clamp_level(base_level)
++	for i in range(level.size()):
++		level[i] = v
++
++func get_level(pos: Vector2i) -> int:
++	if not in_bounds(pos):
++		return LightLevel.SUPERNATURAL_DARKNESS
++	return int(level[_idx(pos)])
++
++func set_level_max(pos: Vector2i, new_level: int) -> void:
++	if not in_bounds(pos):
++		return
++	var i := _idx(pos)
++	var v := LightLevel.clamp_level(new_level)
++	if v > int(level[i]):
++		level[i] = v
++
++func set_level_min(pos: Vector2i, new_level: int) -> void:
++	if not in_bounds(pos):
++		return
++	var i := _idx(pos)
++	var v := LightLevel.clamp_level(new_level)
++	if v < int(level[i]):
++		level[i] = v
+diff --git a/src/Map/illumination_map.gd.uid b/src/Map/illumination_map.gd.uid
+new file mode 100644
+index 0000000..3b8d8c9
+--- /dev/null
++++ b/src/Map/illumination_map.gd.uid
+@@ -0,0 +1 @@
++uid://bceb2inxpvujg
+diff --git a/src/Map/light_level.gd b/src/Map/light_level.gd
+new file mode 100644
+index 0000000..a71884a
+--- /dev/null
++++ b/src/Map/light_level.gd
+@@ -0,0 +1,10 @@
++class_name LightLevel
++
++const SUPERNATURAL_DARKNESS: int = 0
++const DARKNESS: int = 1
++const DIM: int = 2
++const NORMAL: int = 3
++const BRIGHT: int = 4
++
++static func clamp_level(level: int) -> int:
++	return clampi(level, SUPERNATURAL_DARKNESS, BRIGHT)
+diff --git a/src/Map/light_level.gd.uid b/src/Map/light_level.gd.uid
+new file mode 100644
+index 0000000..20f9047
+--- /dev/null
++++ b/src/Map/light_level.gd.uid
+@@ -0,0 +1 @@
++uid://cdxr6f20bxfn5
+diff --git a/src/Map/light_source.gd b/src/Map/light_source.gd
+new file mode 100644
+index 0000000..6e4201f
+--- /dev/null
++++ b/src/Map/light_source.gd
+@@ -0,0 +1,12 @@
++class_name LightSource
++
++extends RefCounted
++
++var position: Vector2i
++var normal_radius: int
++var dim_radius: int
++
++func _init(pos: Vector2i, normal_radius: int, dim_radius: int) -> void:
++	position = pos
++	self.normal_radius = normal_radius
++	self.dim_radius = dim_radius
+diff --git a/src/Map/light_source.gd.uid b/src/Map/light_source.gd.uid
+new file mode 100644
+index 0000000..0c8e395
+--- /dev/null
++++ b/src/Map/light_source.gd.uid
+@@ -0,0 +1 @@
++uid://cwja0ecw4uw21
+diff --git a/src/Map/light_system.gd b/src/Map/light_system.gd
+new file mode 100644
+index 0000000..946cc81
+--- /dev/null
++++ b/src/Map/light_system.gd
+@@ -0,0 +1,26 @@
++class_name LightSystem
++
++extends RefCounted
++
++var _fov := FieldOfView.new()
++
++func rebuild_illumination(
++	map_data: MapData,
++	illum: IlluminationMap,
++	lights: Array[LightSource]
++) -> void:
++	illum.fill(LightLevel.DARKNESS)
++
++	for light in lights:
++		var tmp_vision := VisionState.new(illum.width, illum.height, false)
++		var cells := _fov.compute(map_data, tmp_vision, light.position, light.dim_radius)
++
++		for cell in cells:
++			var d := Grid.distance_pf(light.position, cell)
++
++			# Bright vs Normal: PF torch is normal, not “bright”.
++			# Keep Bright reserved for daylight / special sources.
++			if d <= light.normal_radius:
++				illum.set_level_max(cell, LightLevel.NORMAL)
++			elif d <= light.dim_radius:
++				illum.set_level_max(cell, LightLevel.DIM)
+diff --git a/src/Map/light_system.gd.uid b/src/Map/light_system.gd.uid
+new file mode 100644
+index 0000000..2bc8a07
+--- /dev/null
++++ b/src/Map/light_system.gd.uid
+@@ -0,0 +1 @@
++uid://dep4cam265uev
+diff --git a/src/Map/map.gd b/src/Map/map.gd
+index 8feffc5..e5d75a5 100644
+--- a/src/Map/map.gd
++++ b/src/Map/map.gd
+@@ -11,6 +11,23 @@ var gen_result: DungeonGenerator.GenerationResult
+ @export var floor_layer: TileMapLayer
+ @export var wall_layer: TileMapLayer
+ 
++@export var fog_layer: TileMapLayer
++
++# Vision configuration (player for now)
++# TODO: support others later
++# TODO: make bright and dim radius source dependent, take off map?
++@export var bright_radius: int = 4
++@export var dim_radius_extra: int = 4  # dim extends bright by this many squares
++
++# TODO: Move this to a definition and resource
++@export var fog_source_id: int = 1
++@export var fog_full_atlas_coords: Vector2i = Vector2i.ZERO
++@export var fog_dim_light_atlas_coords: Vector2i = Vector2i.ZERO
++@export var fog_dim_atlas_coords: Vector2i = Vector2i.ZERO
++@export var fog_alternative_tile: int = 0
++
++var _previous_player_visible: Array[Vector2i] = []
++
+ var registry: TileVisualRegistry
+ var map_data: MapData
+ 
+@@ -24,6 +41,7 @@ func _ready() -> void:
+ 	gen_result = dungeon_generator.generate_into(map_data)
+ 
+ 	render_all()
++	_initialize_fog()
+ 
+ 
+ func render_all() -> void:
+@@ -63,6 +81,67 @@ func _draw_cell(layer: TileMapLayer, cell: Vector2i) -> void:
+ 	layer.set_cell(cell, def.source_id, coords, def.alternative_tile)
+ 
+ 
++func _initialize_fog() -> void:
++	if fog_layer == null:
++		return
++
++	fog_layer.clear()
++
++	for y in range(map_data.height):
++		for x in range(map_data.width):
++			_draw_fog_full(Vector2i(x, y))
++
++
++# Apply fog-of-war based on the given observer's vision state.
++# This is intentionally "player-oriented rendering": enemies can have VisionState too,
++# but only the player VisionState drives fog visuals.
++func apply_player_vision(vision: VisionState, newly_visible: Array[Vector2i]) -> void:
++	if fog_layer == null or vision == null:
++		return
++
++	# Refresh cells that used to be visible (likely becoming dim now).
++	for cell in _previous_player_visible:
++		_refresh_fog_cell(vision, cell)
++
++	# Refresh cells that are visible now (becoming clear now).
++	for cell in newly_visible:
++		_refresh_fog_cell(vision, cell)
++
++	_previous_player_visible = newly_visible
++
++
++func _refresh_fog_cell(vision: VisionState, cell: Vector2i) -> void:
++	if not map_data.is_in_bounds(cell):
++		return
++		
++	# Critical: if not currently visible, ignore light_level entirely.
++	if not vision.is_visible(cell):
++		if not vision.is_explored(cell):
++			_draw_fog_full(cell)
++		else:
++			_draw_fog_dim(cell)
++		return
++
++	# From here down, the cell is visible, so light_level is meaningful.
++	var lvl := vision.get_perceived_light(cell)
++
++	# Visible in dim light: show dim-light overlay
++	if lvl == LightLevel.DIM:
++		fog_layer.set_cell(cell, fog_source_id, fog_dim_light_atlas_coords, fog_alternative_tile)
++		return
++
++	# Visible in normal/bright: clear
++	fog_layer.erase_cell(cell)
++
++
++func _draw_fog_full(cell: Vector2i) -> void:
++	fog_layer.set_cell(cell, fog_source_id, fog_full_atlas_coords, fog_alternative_tile)
++
++
++func _draw_fog_dim(cell: Vector2i) -> void:
++	fog_layer.set_cell(cell, fog_source_id, fog_dim_atlas_coords, fog_alternative_tile)
++
++
+ func get_player_spawn() -> Vector2i:
+ 	if gen_result != null and not gen_result.room_centers.is_empty():
+ 		return gen_result.room_centers[0]
+diff --git a/src/Map/torch_spawner.gd b/src/Map/torch_spawner.gd
+new file mode 100644
+index 0000000..c12de73
+--- /dev/null
++++ b/src/Map/torch_spawner.gd
+@@ -0,0 +1,20 @@
++class_name TorchSpawner
++
++extends RefCounted
++
++var _torches: Array[Vector2i] = []
++
++func add_torch(cell: Vector2i) -> void:
++	_torches.append(cell)
++
++func clear() -> void:
++	_torches.clear()
++
++func get_torch_cells() -> Array[Vector2i]:
++	return _torches.duplicate()
++
++func build_light_sources(normal_radius: int, dim_radius: int) -> Array[LightSource]:
++	var lights: Array[LightSource] = []
++	for cell in _torches:
++		lights.append(LightSource.new(cell, normal_radius, dim_radius))
++	return lights
+diff --git a/src/Map/torch_spawner.gd.uid b/src/Map/torch_spawner.gd.uid
+new file mode 100644
+index 0000000..906bb00
+--- /dev/null
++++ b/src/Map/torch_spawner.gd.uid
+@@ -0,0 +1 @@
++uid://dnwxqe63lketp
+diff --git a/src/Map/vision_state.gd b/src/Map/vision_state.gd
+new file mode 100644
+index 0000000..bfa91b2
+--- /dev/null
++++ b/src/Map/vision_state.gd
+@@ -0,0 +1,71 @@
++class_name VisionState
++
++extends RefCounted
++
++var width: int
++var height: int
++
++var visible: PackedByteArray
++var explored: PackedByteArray = PackedByteArray()
++
++# 0..4, using LightLevel constants
++var perceived_light: PackedByteArray
++
++func _init(w: int, h: int, track_explored: bool) -> void:
++	width = w
++	height = h
++
++	var cell_count := width * height
++
++	visible = PackedByteArray()
++	visible.resize(cell_count)
++
++	perceived_light = PackedByteArray()
++	perceived_light.resize(cell_count)
++
++	if track_explored:
++		explored = PackedByteArray()
++		explored.resize(cell_count)
++
++func _idx(pos: Vector2i) -> int:
++	return pos.y * width + pos.x
++
++func in_bounds(pos: Vector2i) -> bool:
++	return pos.x >= 0 and pos.y >= 0 and pos.x < width and pos.y < height
++
++func clear_visible() -> void:
++	for i in range(visible.size()):
++		visible[i] = 0
++		perceived_light[i] = LightLevel.SUPERNATURAL_DARKNESS
++
++func set_visible(pos: Vector2i, value: bool) -> void:
++	if not in_bounds(pos):
++		return
++
++	var i := _idx(pos)
++	visible[i] = 1 if value else 0
++
++	if value and explored.size() > 0:
++		explored[i] = 1
++
++func set_perceived_light(pos: Vector2i, level: int) -> void:
++	if not in_bounds(pos):
++		return
++	perceived_light[_idx(pos)] = LightLevel.clamp_level(level)
++
++func get_perceived_light(pos: Vector2i) -> int:
++	if not in_bounds(pos):
++		return LightLevel.SUPERNATURAL_DARKNESS
++	return int(perceived_light[_idx(pos)])
++
++func is_visible(pos: Vector2i) -> bool:
++	if not in_bounds(pos):
++		return false
++	return visible[_idx(pos)] == 1
++
++func is_explored(pos: Vector2i) -> bool:
++	if explored.size() <= 0:
++		return false
++	if not in_bounds(pos):
++		return false
++	return explored[_idx(pos)] == 1
+diff --git a/src/Map/vision_state.gd.uid b/src/Map/vision_state.gd.uid
+new file mode 100644
+index 0000000..0a430e9
+--- /dev/null
++++ b/src/Map/vision_state.gd.uid
+@@ -0,0 +1 @@
++uid://r36c3kh3i7vx
+diff --git a/src/Utils/grid.gd b/src/Utils/grid.gd
+index 3562fb5..2a4b815 100644
+--- a/src/Utils/grid.gd
++++ b/src/Utils/grid.gd
+@@ -12,3 +12,17 @@ static  func grid_to_world(grid_pos: Vector2i) -> Vector2i:
+ static func world_to_grid(world_pos: Vector2i) -> Vector2i:
+ 	var grid_pos: Vector2i = world_pos / tile_size
+ 	return grid_pos
++
++## Pathfinder distance in squares:
++## Every other diaginol counts as two squars
++static func distance_pf(a: Vector2i, b: Vector2i) -> int:
++	var dx: int = absi(b.x - a.x)
++	var dy: int = absi(b.y - a.y)
++
++	var diagonals: int = min(dx, dy)
++	var straights: int = max(dx, dy) - diagonals
++
++	# Every second diagonal costs 2 instead of 1
++	var extra: int = diagonals >> 1
++
++	return straights + diagonals + extra

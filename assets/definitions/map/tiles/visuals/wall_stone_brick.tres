@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_0pcya")
 source_id = 1
-atlas_coords_options = Array[Vector2i]([Vector2i(10, 4), Vector2i(12, 4), Vector2i(14, 4)])
+atlas_coords_options = Array[Vector2i]([Vector2i(1, 9)])
 metadata/_custom_type_script = "uid://by5snrwe3dvv1"

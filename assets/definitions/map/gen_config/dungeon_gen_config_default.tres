@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="DungeonGenConfig" load_steps=6 format=3 uid="uid://y4cfj10mjhe8"]
 
 [ext_resource type="Resource" uid="uid://cw82wxgvglpal" path="res://assets/definitions/map/gen_config/corridor_config/l_corridor_carver_default.tres" id="1_rr7oy"]
-[ext_resource type="Resource" uid="uid://y7j8xel3q5xk" path="res://assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres" id="2_nuecr"]
 [ext_resource type="Resource" uid="uid://c2pbk8ivfvd28" path="res://assets/definitions/map/gen_config/connector_config/mst_plus_loops.tres" id="2_nw1ek"]
 [ext_resource type="Resource" uid="uid://c34tcx7qq64yn" path="res://assets/definitions/map/gen_config/corridor_config/corridor_width_config/corridor_width_default.tres" id="2_t8axl"]
 [ext_resource type="Script" uid="uid://bu4d3486tsfs3" path="res://src/Map/Generation/dungeon_gen_config.gd" id="3_nw1ek"]
+[ext_resource type="Resource" uid="uid://bhlwhs4rjau1j" path="res://assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres" id="4_nw1ek"]
 
 [resource]
 script = ExtResource("3_nw1ek")
-room_min_size = 5
-room_max_size = 20
+room_min_size = 4
+room_max_size = 16
 corridor_widths = ExtResource("2_t8axl")
-room_placer = ExtResource("2_nuecr")
+room_placer = ExtResource("4_nw1ek")
 room_connector = ExtResource("2_nw1ek")
 corridor_carver = ExtResource("1_rr7oy")
 metadata/_custom_type_script = "uid://bu4d3486tsfs3"

@@ -6,6 +6,9 @@ var grid_position: Vector2i:
 	set(value):
 		grid_position = value
 		position = Grid.grid_to_world(grid_position)
+		
+var vision_state: VisionState = null
+
 
 func _init(start_position: Vector2i, entity_definition: EntityDefinition) -> void:
 	centered = false

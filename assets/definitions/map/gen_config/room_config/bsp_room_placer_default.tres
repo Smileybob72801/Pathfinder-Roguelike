@@ -4,4 +4,5 @@
 
 [resource]
 script = ExtResource("1_50e5r")
+min_leaf_size = 5
 metadata/_custom_type_script = "uid://b85nvpru5yr10"
