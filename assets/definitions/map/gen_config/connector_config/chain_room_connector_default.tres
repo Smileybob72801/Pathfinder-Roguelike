@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ChainRoomConnector" load_steps=2 format=3 uid="uid://87fqm3ot5a1d"]
+
+[ext_resource type="Script" uid="uid://droibyff05yw8" path="res://src/Map/Generation/Connectors/chain_room_connector.gd" id="1_kff5a"]
+
+[resource]
+script = ExtResource("1_kff5a")
+metadata/_custom_type_script = "uid://droibyff05yw8"

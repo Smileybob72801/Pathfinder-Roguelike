@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MstRoomConnector" load_steps=2 format=3 uid="uid://emly6dv41s4t"]
+
+[ext_resource type="Script" uid="uid://ckrmmyamr5fj" path="res://src/Map/Generation/Connectors/mst_room_connector.gd" id="1_nf8om"]
+
+[resource]
+script = ExtResource("1_nf8om")
+metadata/_custom_type_script = "uid://ckrmmyamr5fj"

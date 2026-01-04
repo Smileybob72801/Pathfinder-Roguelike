@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="DrunkWalkCorridorCarver" load_steps=2 format=3 uid="uid://d2hk3862e1mv7"]
+
+[ext_resource type="Script" uid="uid://cgabekwo3koyo" path="res://src/Map/Generation/Corridors/drunk_walk_corridor_carver.gd" id="1_k02u5"]
+
+[resource]
+script = ExtResource("1_k02u5")
+metadata/_custom_type_script = "uid://cgabekwo3koyo"

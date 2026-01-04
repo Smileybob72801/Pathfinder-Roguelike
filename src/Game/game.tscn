@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://h55jsqf73lyx"]
+[gd_scene load_steps=7 format=3 uid="uid://h55jsqf73lyx"]
 
 [ext_resource type="Script" uid="uid://c6si3ker444vh" path="res://src/Game/game.gd" id="1_60cvd"]
 [ext_resource type="Script" uid="uid://cn2nl54elf2lj" path="res://src/Map/map.gd" id="3_3s8ir"]
 [ext_resource type="TileSet" uid="uid://bp3jqmorgaduo" path="res://assets/tilesets/dcss_tileset.tres" id="3_bob6j"]
 [ext_resource type="Script" uid="uid://bojmjnun6jh7q" path="res://src/Game/event_handler.gd" id="3_sag4g"]
+[ext_resource type="Script" uid="uid://pe54was57ngv" path="res://src/Map/Generation/dungeon_generator.gd" id="5_3s8ir"]
+[ext_resource type="Resource" uid="uid://y4cfj10mjhe8" path="res://assets/definitions/map/gen_config/dungeon_gen_config_default.tres" id="6_7m6cs"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_60cvd")
@@ -13,6 +15,7 @@ script = ExtResource("3_sag4g")
 
 [node name="Map" type="Node2D" parent="." node_paths=PackedStringArray("floor_layer", "wall_layer")]
 script = ExtResource("3_3s8ir")
+map_height = 80
 floor_layer = NodePath("FloorLayer")
 wall_layer = NodePath("WallLayer")
 
@@ -22,4 +25,10 @@ tile_set = ExtResource("3_bob6j")
 [node name="WallLayer" type="TileMapLayer" parent="Map"]
 tile_set = ExtResource("3_bob6j")
 
+[node name="DungeonGenerator" type="Node" parent="Map"]
+script = ExtResource("5_3s8ir")
+config = ExtResource("6_7m6cs")
+
 [node name="Entities" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]

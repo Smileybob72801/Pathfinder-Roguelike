@@ -1,0 +1,602 @@
+diff --git a/assets/definitions/map/gen_config/connector_config/knearest_loops.tres b/assets/definitions/map/gen_config/connector_config/knearest_loops.tres
+new file mode 100644
+index 0000000..d4a74a0
+--- /dev/null
++++ b/assets/definitions/map/gen_config/connector_config/knearest_loops.tres
+@@ -0,0 +1,9 @@
++[gd_resource type="Resource" script_class="KNearestExtraEdgesConnector" load_steps=2 format=3 uid="uid://i7h2c2oghh0f"]
++
++[ext_resource type="Script" uid="uid://cbrjcmw3bi2cv" path="res://src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd" id="1_hdcr8"]
++
++[resource]
++script = ExtResource("1_hdcr8")
++k = 4
++max_extra_edges = 30
++metadata/_custom_type_script = "uid://cbrjcmw3bi2cv"
+diff --git a/assets/definitions/map/gen_config/connector_config/mst_backbone.tres b/assets/definitions/map/gen_config/connector_config/mst_backbone.tres
+new file mode 100644
+index 0000000..e84da7b
+--- /dev/null
++++ b/assets/definitions/map/gen_config/connector_config/mst_backbone.tres
+@@ -0,0 +1,7 @@
++[gd_resource type="Resource" script_class="MstRoomConnector" load_steps=2 format=3 uid="uid://bpns8k72g4b2g"]
++
++[ext_resource type="Script" uid="uid://ckrmmyamr5fj" path="res://src/Map/Generation/Connectors/mst_room_connector.gd" id="1_xgxdi"]
++
++[resource]
++script = ExtResource("1_xgxdi")
++metadata/_custom_type_script = "uid://ckrmmyamr5fj"
+diff --git a/assets/definitions/map/gen_config/connector_config/mst_plus_loops.tres b/assets/definitions/map/gen_config/connector_config/mst_plus_loops.tres
+new file mode 100644
+index 0000000..b765c26
+--- /dev/null
++++ b/assets/definitions/map/gen_config/connector_config/mst_plus_loops.tres
+@@ -0,0 +1,12 @@
++[gd_resource type="Resource" script_class="CompositeRoomConnector" load_steps=5 format=3 uid="uid://c2pbk8ivfvd28"]
++
++[ext_resource type="Script" uid="uid://bjap5dlgv7a3y" path="res://src/Map/Generation/Connectors/room_connector.gd" id="1_8v8g7"]
++[ext_resource type="Resource" uid="uid://bpns8k72g4b2g" path="res://assets/definitions/map/gen_config/connector_config/mst_backbone.tres" id="1_i7o30"]
++[ext_resource type="Script" uid="uid://bae4kvich8p8k" path="res://src/Map/Generation/Connectors/composite_room_connector.gd" id="2_rk8o5"]
++[ext_resource type="Resource" uid="uid://i7h2c2oghh0f" path="res://assets/definitions/map/gen_config/connector_config/knearest_loops.tres" id="3_5r1gx"]
++
++[resource]
++script = ExtResource("2_rk8o5")
++base_connector = ExtResource("1_i7o30")
++extra_connectors = Array[ExtResource("1_8v8g7")]([ExtResource("3_5r1gx")])
++metadata/_custom_type_script = "uid://bae4kvich8p8k"
+diff --git a/assets/definitions/map/gen_config/connector_config/mst_room_connector_default.tres b/assets/definitions/map/gen_config/connector_config/mst_room_connector_default.tres
+new file mode 100644
+index 0000000..7c8ceb1
+--- /dev/null
++++ b/assets/definitions/map/gen_config/connector_config/mst_room_connector_default.tres
+@@ -0,0 +1,7 @@
++[gd_resource type="Resource" script_class="MstRoomConnector" load_steps=2 format=3 uid="uid://emly6dv41s4t"]
++
++[ext_resource type="Script" uid="uid://ckrmmyamr5fj" path="res://src/Map/Generation/Connectors/mst_room_connector.gd" id="1_nf8om"]
++
++[resource]
++script = ExtResource("1_nf8om")
++metadata/_custom_type_script = "uid://ckrmmyamr5fj"
+diff --git a/assets/definitions/map/gen_config/corridor_config/corridor_width_config/corridor_width_default.tres b/assets/definitions/map/gen_config/corridor_config/corridor_width_config/corridor_width_default.tres
+new file mode 100644
+index 0000000..366a205
+--- /dev/null
++++ b/assets/definitions/map/gen_config/corridor_config/corridor_width_config/corridor_width_default.tres
+@@ -0,0 +1,20 @@
++[gd_resource type="Resource" script_class="CorridorWidthDistribution" load_steps=5 format=3 uid="uid://c34tcx7qq64yn"]
++
++[ext_resource type="Script" uid="uid://hndlt4isstri" path="res://src/Map/Generation/Corridors/weighted_int.gd" id="1_x3tst"]
++[ext_resource type="Script" uid="uid://dd3qrcnby84yg" path="res://src/Map/Generation/Corridors/corridor_width_distribution.gd" id="2_53mrq"]
++
++[sub_resource type="Resource" id="Resource_x3tst"]
++script = ExtResource("1_x3tst")
++weight = 0.25
++metadata/_custom_type_script = "uid://hndlt4isstri"
++
++[sub_resource type="Resource" id="Resource_53mrq"]
++script = ExtResource("1_x3tst")
++value = 2
++weight = 0.75
++metadata/_custom_type_script = "uid://hndlt4isstri"
++
++[resource]
++script = ExtResource("2_53mrq")
++options = Array[ExtResource("1_x3tst")]([SubResource("Resource_x3tst"), SubResource("Resource_53mrq")])
++metadata/_custom_type_script = "uid://dd3qrcnby84yg"
+diff --git a/assets/definitions/map/gen_config/dungeon_gen_config_default.tres b/assets/definitions/map/gen_config/dungeon_gen_config_default.tres
+index 1b74f92..74cdbca 100644
+--- a/assets/definitions/map/gen_config/dungeon_gen_config_default.tres
++++ b/assets/definitions/map/gen_config/dungeon_gen_config_default.tres
+@@ -1,19 +1,17 @@
+ [gd_resource type="Resource" script_class="DungeonGenConfig" load_steps=6 format=3 uid="uid://y4cfj10mjhe8"]
+ 
+-[ext_resource type="Script" uid="uid://lahsp5fgvso7" path="res://src/Map/Generation/Corridors/l_corridor_carver.gd" id="1_nuecr"]
++[ext_resource type="Resource" uid="uid://cw82wxgvglpal" path="res://assets/definitions/map/gen_config/corridor_config/l_corridor_carver_default.tres" id="1_rr7oy"]
+ [ext_resource type="Resource" uid="uid://y7j8xel3q5xk" path="res://assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres" id="2_nuecr"]
+-[ext_resource type="Resource" uid="uid://brg1ibo036x54" path="res://assets/definitions/map/gen_config/connector_config/k_nearest_room_connector_default.tres" id="2_nw1ek"]
++[ext_resource type="Resource" uid="uid://c2pbk8ivfvd28" path="res://assets/definitions/map/gen_config/connector_config/mst_plus_loops.tres" id="2_nw1ek"]
++[ext_resource type="Resource" uid="uid://c34tcx7qq64yn" path="res://assets/definitions/map/gen_config/corridor_config/corridor_width_config/corridor_width_default.tres" id="2_t8axl"]
+ [ext_resource type="Script" uid="uid://bu4d3486tsfs3" path="res://src/Map/Generation/dungeon_gen_config.gd" id="3_nw1ek"]
+ 
+-[sub_resource type="Resource" id="Resource_nw1ek"]
+-script = ExtResource("1_nuecr")
+-metadata/_custom_type_script = "uid://lahsp5fgvso7"
+-
+ [resource]
+ script = ExtResource("3_nw1ek")
+-room_min_size = 2
+-room_max_size = 15
++room_min_size = 5
++room_max_size = 20
++corridor_widths = ExtResource("2_t8axl")
+ room_placer = ExtResource("2_nuecr")
+ room_connector = ExtResource("2_nw1ek")
+-corridor_carver = SubResource("Resource_nw1ek")
++corridor_carver = ExtResource("1_rr7oy")
+ metadata/_custom_type_script = "uid://bu4d3486tsfs3"
+diff --git a/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres b/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres
+index 417dcf0..31f62f3 100644
+--- a/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres
++++ b/assets/definitions/map/gen_config/room_config/bsp_room_placer_default.tres
+@@ -4,5 +4,4 @@
+ 
+ [resource]
+ script = ExtResource("1_50e5r")
+-room_margin = 0
+ metadata/_custom_type_script = "uid://b85nvpru5yr10"
+diff --git a/assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres b/assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres
+index d37c043..a25dda5 100644
+--- a/assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres
++++ b/assets/definitions/map/gen_config/room_config/rect_room_placer_default.tres
+@@ -4,6 +4,6 @@
+ 
+ [resource]
+ script = ExtResource("1_hqnak")
+-max_rooms = 50
+-placement_attempts = 200
++max_rooms = 100
++placement_attempts = 300
+ metadata/_custom_type_script = "uid://frswhralkobl"
+diff --git a/src/Map/Generation/Connectors/composite_room_connector.gd b/src/Map/Generation/Connectors/composite_room_connector.gd
+new file mode 100644
+index 0000000..1da3386
+--- /dev/null
++++ b/src/Map/Generation/Connectors/composite_room_connector.gd
+@@ -0,0 +1,50 @@
++class_name CompositeRoomConnector
++
++extends RoomConnector
++
++@export_category("Composite")
++@export var base_connector: RoomConnector
++
++# These are additive. Their edges are merged with the base, then de-duplicated.
++@export var extra_connectors: Array[RoomConnector] = []
++
++func build_edges(rng: RandomNumberGenerator, room_centers: Array[Vector2i]) -> Array[RoomEdge]:
++	var merged: Array[RoomEdge] = []
++	var used := {} # Dictionary as set: "a:b" -> true
++
++	if room_centers.size() < 2:
++		return merged
++
++	if base_connector == null:
++		push_error("CompositeRoomConnector: base_connector is null.")
++		return merged
++
++	_merge_edges(merged, used, base_connector.build_edges(rng, room_centers))
++
++	for c in extra_connectors:
++		if c == null:
++			continue
++		_merge_edges(merged, used, c.build_edges(rng, room_centers))
++
++	return merged
++
++func _merge_edges(out_edges: Array[RoomEdge], used: Dictionary, incoming: Array[RoomEdge]) -> void:
++	for e in incoming:
++		if e == null:
++			continue
++
++		var a: int = e.a
++		var b: int = e.b
++
++		if a == b:
++			continue
++
++		var lo: int = mini(a, b)
++		var hi: int = maxi(a, b)
++
++		var key: String = str(lo) + ":" + str(hi)
++		if used.has(key):
++			continue
++
++		used[key] = true
++		out_edges.append(RoomEdge.new(lo, hi))
+diff --git a/src/Map/Generation/Connectors/composite_room_connector.gd.uid b/src/Map/Generation/Connectors/composite_room_connector.gd.uid
+new file mode 100644
+index 0000000..95bd991
+--- /dev/null
++++ b/src/Map/Generation/Connectors/composite_room_connector.gd.uid
+@@ -0,0 +1 @@
++uid://bae4kvich8p8k
+diff --git a/src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd b/src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd
+new file mode 100644
+index 0000000..3ef707e
+--- /dev/null
++++ b/src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd
+@@ -0,0 +1,79 @@
++class_name KNearestExtraEdgesConnector
++
++extends RoomConnector
++
++@export_category("Extra Connections")
++@export var k: int = 3
++
++@export_range(0.0, 1.0, 0.01) var extra_density: float = 0.25
++
++@export var max_extra_edges: int = 50
++
++func build_edges(rng: RandomNumberGenerator, room_centers: Array[Vector2i]) -> Array[RoomEdge]:
++	var edges: Array[RoomEdge] = []
++	var n: int = room_centers.size()
++
++	if n < 2:
++		return edges
++	if k <= 0 or extra_density <= 0.0 or max_extra_edges <= 0:
++		return edges
++
++	var used := {} # local dedupe for this connector
++	var extras_added: int = 0
++	var attempts: int = 0
++	var max_attempts: int = max_extra_edges * 20
++
++	while extras_added < max_extra_edges and attempts < max_attempts:
++		attempts += 1
++
++		if rng.randf() > extra_density:
++			continue
++
++		var a: int = rng.randi_range(0, n - 1)
++		var candidates: Array[int] = _k_nearest_indices(room_centers, a, k)
++
++		if candidates.is_empty():
++			continue
++
++		var b: int = candidates[rng.randi_range(0, candidates.size() - 1)]
++		if b == a:
++			continue
++
++		var added: bool = _try_add_edge(edges, used, a, b)
++		if added:
++			extras_added += 1
++
++	return edges
++
++func _try_add_edge(edges: Array[RoomEdge], used: Dictionary, a: int, b: int) -> bool:
++	var lo: int = mini(a, b)
++	var hi: int = maxi(a, b)
++	var key: String = str(lo) + ":" + str(hi)
++
++	if used.has(key):
++		return false
++
++	used[key] = true
++	edges.append(RoomEdge.new(lo, hi))
++	return true
++
++func _k_nearest_indices(points: Array[Vector2i], a: int, k_count: int) -> Array[int]:
++	var scored: Array[Dictionary] = []
++
++	for i in range(points.size()):
++		if i == a:
++			continue
++		var d: Vector2i = points[i] - points[a]
++		var d2: int = (d.x * d.x) + (d.y * d.y)
++		scored.append({ "i": i, "d2": d2 })
++
++	scored.sort_custom(func(x: Dictionary, y: Dictionary) -> bool:
++		return int(x["d2"]) < int(y["d2"])
++	)
++
++	var out: Array[int] = []
++	var limit: int = mini(k_count, scored.size())
++	for j in range(limit):
++		out.append(int(scored[j]["i"]))
++
++	return out
+diff --git a/src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd.uid b/src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd.uid
+new file mode 100644
+index 0000000..bcadeba
+--- /dev/null
++++ b/src/Map/Generation/Connectors/k_nearest_extra_edges_connector.gd.uid
+@@ -0,0 +1 @@
++uid://cbrjcmw3bi2cv
+diff --git a/src/Map/Generation/Connectors/mst_room_connector.gd b/src/Map/Generation/Connectors/mst_room_connector.gd
+new file mode 100644
+index 0000000..f0cd082
+--- /dev/null
++++ b/src/Map/Generation/Connectors/mst_room_connector.gd
+@@ -0,0 +1,85 @@
++class_name MstRoomConnector
++
++extends RoomConnector
++
++## Builds a Minimum Spanning Tree (MST) over room centers using Prim's algorithm.
++## - Always returns a connected set of edges when room_centers.size() >= 2
++## - Returns exactly (N - 1) edges for N rooms
++## - No loops (cycles)
++
++func build_edges(rng: RandomNumberGenerator, room_centers: Array[Vector2i]) -> Array[RoomEdge]:
++	var edges: Array[RoomEdge] = []
++	var n: int = room_centers.size()
++
++	if n < 2:
++		return edges
++
++	# Prim's algorithm (O(n^2)) - simple and plenty fast for typical room counts.
++	var in_tree: PackedByteArray = PackedByteArray()
++	in_tree.resize(n)
++
++	var best_cost: PackedInt32Array = PackedInt32Array()
++	best_cost.resize(n)
++
++	var best_parent: PackedInt32Array = PackedInt32Array()
++	best_parent.resize(n)
++
++	var i: int = 0
++	while i < n:
++		in_tree[i] = 0
++		best_cost[i] = 2147483647 # INT32_MAX sentinel
++		best_parent[i] = -1
++		i += 1
++
++	# Start from a deterministic node (0). If you want variety, randomize this later.
++	var start: int = 0
++	in_tree[start] = 1
++
++	# Initialize costs from start
++	i = 0
++	while i < n:
++		if i != start:
++			best_cost[i] = _dist2(room_centers[start], room_centers[i])
++			best_parent[i] = start
++		i += 1
++
++	var added: int = 1
++	while added < n:
++		var next_node: int = -1
++		var next_cost: int = 2147483647
++
++		# Find the cheapest node not yet in the tree
++		i = 0
++		while i < n:
++			if in_tree[i] == 0 and best_cost[i] < next_cost:
++				next_cost = best_cost[i]
++				next_node = i
++			i += 1
++
++		# Shouldn't happen unless n is weird, but guard anyway.
++		if next_node == -1:
++			break
++
++		in_tree[next_node] = 1
++		added += 1
++
++		var parent: int = best_parent[next_node]
++		if parent >= 0:
++			edges.append(RoomEdge.new(parent, next_node))
++
++		# Relax edges from next_node to all non-tree nodes
++		i = 0
++		while i < n:
++			if in_tree[i] == 0:
++				var c: int = _dist2(room_centers[next_node], room_centers[i])
++				if c < best_cost[i]:
++					best_cost[i] = c
++					best_parent[i] = next_node
++			i += 1
++
++	return edges
++
++func _dist2(a: Vector2i, b: Vector2i) -> int:
++	var dx: int = b.x - a.x
++	var dy: int = b.y - a.y
++	return (dx * dx) + (dy * dy)
+diff --git a/src/Map/Generation/Connectors/mst_room_connector.gd.uid b/src/Map/Generation/Connectors/mst_room_connector.gd.uid
+new file mode 100644
+index 0000000..f415f46
+--- /dev/null
++++ b/src/Map/Generation/Connectors/mst_room_connector.gd.uid
+@@ -0,0 +1 @@
++uid://ckrmmyamr5fj
+diff --git a/src/Map/Generation/Corridors/corridor_width_distribution.gd b/src/Map/Generation/Corridors/corridor_width_distribution.gd
+new file mode 100644
+index 0000000..5ee663c
+--- /dev/null
++++ b/src/Map/Generation/Corridors/corridor_width_distribution.gd
+@@ -0,0 +1,34 @@
++class_name CorridorWidthDistribution
++
++extends Resource
++
++@export var options: Array[WeightedInt] = []
++
++func pick(rng: RandomNumberGenerator) -> int:
++	if options.is_empty():
++		return 1
++
++	var total: float = 0.0
++	for o in options:
++		if o == null:
++			continue
++		if o.weight > 0.0:
++			total += o.weight
++
++	if total <= 0.0:
++		return maxi(1, options[0].value)
++
++	var roll: float = rng.randf() * total
++	var acc: float = 0.0
++
++	for o in options:
++		if o == null:
++			continue
++		if o.weight <= 0.0:
++			continue
++
++		acc += o.weight
++		if roll <= acc:
++			return maxi(1, o.value)
++
++	return maxi(1, options.back().value)
+diff --git a/src/Map/Generation/Corridors/corridor_width_distribution.gd.uid b/src/Map/Generation/Corridors/corridor_width_distribution.gd.uid
+new file mode 100644
+index 0000000..891ae4a
+--- /dev/null
++++ b/src/Map/Generation/Corridors/corridor_width_distribution.gd.uid
+@@ -0,0 +1 @@
++uid://dd3qrcnby84yg
+diff --git a/src/Map/Generation/Corridors/drunk_walk_corridor_carver.gd b/src/Map/Generation/Corridors/drunk_walk_corridor_carver.gd
+index 1f2b234..e9034e4 100644
+--- a/src/Map/Generation/Corridors/drunk_walk_corridor_carver.gd
++++ b/src/Map/Generation/Corridors/drunk_walk_corridor_carver.gd
+@@ -15,17 +15,24 @@ func carve_edges(
+ 	carve_floor: Callable
+ ) -> void:
+ 	for e in edges:
+-		_connect(map_data, rng, room_centers[e.a], room_centers[e.b], carve_floor)
++		var width: int = _pick_width(rng, config)
++		_connect(map_data, rng, room_centers[e.a], room_centers[e.b], width, carve_floor)
++
++func _pick_width(rng: RandomNumberGenerator, config: DungeonGenConfig) -> int:
++	if config.corridor_widths == null:
++		return 1
++	return maxi(1, config.corridor_widths.pick(rng))
+ 
+ func _connect(
+ 	map_data: MapData,
+ 	rng: RandomNumberGenerator,
+ 	start: Vector2i,
+ 	target: Vector2i,
++	width: int,
+ 	carve_floor: Callable
+ ) -> void:
+ 	var pos: Vector2i = start
+-	carve_floor.call(pos)
++	_carve_blob(map_data, pos, width, carve_floor)
+ 
+ 	var steps: int = 0
+ 	while pos != target and steps < max_steps_per_connection:
+@@ -62,7 +69,17 @@ func _connect(
+ 			break
+ 
+ 		pos = next
+-		carve_floor.call(pos)
++		_carve_blob(map_data, pos, width, carve_floor)
++
++func _carve_blob(map_data: MapData, center: Vector2i, width: int, carve_floor: Callable) -> void:
++	var half_low: int = int(width / 2)
++	var half_high: int = width - half_low - 1
++
++	for y in range(center.y - half_low, center.y + half_high + 1):
++		for x in range(center.x - half_low, center.x + half_high + 1):
++			var p: Vector2i = Vector2i(x, y)
++			if map_data.is_in_bounds(p):
++				carve_floor.call(p)
+ 
+ func _signi(v: int) -> int:
+ 	if v < 0:
+diff --git a/src/Map/Generation/Corridors/l_corridor_carver.gd b/src/Map/Generation/Corridors/l_corridor_carver.gd
+index 1ff0044..aa77c8a 100644
+--- a/src/Map/Generation/Corridors/l_corridor_carver.gd
++++ b/src/Map/Generation/Corridors/l_corridor_carver.gd
+@@ -13,30 +13,66 @@ func carve_edges(
+ 	for e in edges:
+ 		var start: Vector2i = room_centers[e.a]
+ 		var end: Vector2i = room_centers[e.b]
+-		_tunnel_between(map_data, rng, start, end, carve_floor)
++
++		var width: int = _pick_width(rng, config)
++		_tunnel_between(map_data, rng, start, end, width, carve_floor)
++
++func _pick_width(rng: RandomNumberGenerator, config: DungeonGenConfig) -> int:
++	if config.corridor_widths == null:
++		return 1
++	return maxi(1, config.corridor_widths.pick(rng))
+ 
+ func _tunnel_between(
+ 	map_data: MapData,
+ 	rng: RandomNumberGenerator,
+ 	start: Vector2i,
+ 	end: Vector2i,
++	width: int,
+ 	carve_floor: Callable
+ ) -> void:
+ 	if rng.randf() < 0.5:
+-		_tunnel_horizontal(map_data, start.y, start.x, end.x, carve_floor)
+-		_tunnel_vertical(map_data, end.x, start.y, end.y, carve_floor)
++		_tunnel_horizontal(map_data, start.y, start.x, end.x, width, carve_floor)
++		_tunnel_vertical(map_data, end.x, start.y, end.y, width, carve_floor)
+ 	else:
+-		_tunnel_vertical(map_data, start.x, start.y, end.y, carve_floor)
+-		_tunnel_horizontal(map_data, end.y, start.x, end.x, carve_floor)
++		_tunnel_vertical(map_data, start.x, start.y, end.y, width, carve_floor)
++		_tunnel_horizontal(map_data, end.y, start.x, end.x, width, carve_floor)
+ 
+-func _tunnel_horizontal(map_data: MapData, y: int, x_start: int, x_end: int, carve_floor: Callable) -> void:
++func _tunnel_horizontal(
++	map_data: MapData,
++	y: int,
++	x_start: int,
++	x_end: int,
++	width: int,
++	carve_floor: Callable
++) -> void:
+ 	var x_min: int = mini(x_start, x_end)
+ 	var x_max: int = maxi(x_start, x_end)
++
++	var half_low: int = int(width / 2)
++	var half_high: int = width - half_low - 1
++
+ 	for x in range(x_min, x_max + 1):
+-		carve_floor.call(Vector2i(x, y))
++		for dy in range(-half_low, half_high + 1):
++			var p: Vector2i = Vector2i(x, y + dy)
++			if map_data.is_in_bounds(p):
++				carve_floor.call(p)
+ 
+-func _tunnel_vertical(map_data: MapData, x: int, y_start: int, y_end: int, carve_floor: Callable) -> void:
++func _tunnel_vertical(
++	map_data: MapData,
++	x: int,
++	y_start: int,
++	y_end: int,
++	width: int,
++	carve_floor: Callable
++) -> void:
+ 	var y_min: int = mini(y_start, y_end)
+ 	var y_max: int = maxi(y_start, y_end)
++
++	var half_low: int = int(width / 2)
++	var half_high: int = width - half_low - 1
++
+ 	for y in range(y_min, y_max + 1):
+-		carve_floor.call(Vector2i(x, y))
++		for dx in range(-half_low, half_high + 1):
++			var p: Vector2i = Vector2i(x + dx, y)
++			if map_data.is_in_bounds(p):
++				carve_floor.call(p)
+diff --git a/src/Map/Generation/Corridors/weighted_int.gd b/src/Map/Generation/Corridors/weighted_int.gd
+new file mode 100644
+index 0000000..b950baf
+--- /dev/null
++++ b/src/Map/Generation/Corridors/weighted_int.gd
+@@ -0,0 +1,6 @@
++class_name WeightedInt
++
++extends Resource
++
++@export var value: int = 1
++@export var weight: float = 1.0
+diff --git a/src/Map/Generation/Corridors/weighted_int.gd.uid b/src/Map/Generation/Corridors/weighted_int.gd.uid
+new file mode 100644
+index 0000000..b4f5497
+--- /dev/null
++++ b/src/Map/Generation/Corridors/weighted_int.gd.uid
+@@ -0,0 +1 @@
++uid://hndlt4isstri
+diff --git a/src/Map/Generation/dungeon_gen_config.gd b/src/Map/Generation/dungeon_gen_config.gd
+index e16a5be..1d1893f 100644
+--- a/src/Map/Generation/dungeon_gen_config.gd
++++ b/src/Map/Generation/dungeon_gen_config.gd
+@@ -10,6 +10,9 @@ extends Resource
+ @export var room_max_size: int = 10
+ @export var room_spacing: int = 1 # extra gap between rooms
+ 
++@export_category("Corridors")
++@export var corridor_widths: CorridorWidthDistribution
++
+ @export_category("Components")
+ @export var room_placer: RoomPlacer
+ @export var room_connector: RoomConnector
